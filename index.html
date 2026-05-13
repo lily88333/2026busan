@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>釜山 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F7F6F3;--bg2:#FFFFFF;--bg3:#F0EDE8;
+  --t1:#1A1A1A;--t2:#5C5C5C;--t3:#A8A8A8;
+  --border:#E8E4DC;--border2:#D8D4CC;
+  --accent:#C96A3A;--ocean:#4A90A4;
+  --c-food:#D4845A;--c-cafe:#B89B5E;--c-activity:#4A90A4;
+  --c-sport:#5A9A72;--c-shopping:#8B6BAE;--c-medical:#D4607A;--c-transport:#8A9AA8;
+  --nav-h:60px;--safe-b:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:-apple-system,'Hiragino Sans','Noto Sans TC',sans-serif;overscroll-behavior:none}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:0;height:0}
+
+/* ── Name Modal ── */
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:flex-end;justify-content:center}
+.modal-sheet{background:#fff;border-radius:20px 20px 0 0;padding:28px 24px calc(28px + var(--safe-b));width:100%;max-width:480px;text-align:center}
+.modal-icon{font-size:48px;margin-bottom:12px}
+.modal-sheet h3{font-size:20px;font-weight:700;margin-bottom:6px}
+.modal-sheet p{font-size:14px;color:var(--t2);margin-bottom:20px}
+.modal-input{width:100%;border:1.5px solid var(--border2);border-radius:10px;padding:14px;font-size:17px;text-align:center;font-family:inherit;outline:none}
+.modal-input:focus{border-color:var(--accent)}
+.modal-btn{margin-top:12px;width:100%;background:var(--t1);color:#fff;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;cursor:pointer}
+
+/* ── Header ── */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px 10px;padding-top:calc(12px + env(safe-area-inset-top,0px));position:sticky;top:0;z-index:100}
+.header-row{display:flex;align-items:center;justify-content:space-between}
+.header-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.header-sub{font-size:12px;color:var(--t3);margin-top:1px}
+.user-chip{display:flex;align-items:center;gap:6px;background:var(--bg3);border-radius:20px;padding:5px 12px;font-size:13px;cursor:pointer;font-weight:500}
+
+/* ── Bottom Nav ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-b)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0;gap:3px;cursor:pointer;color:var(--t3);font-size:10px;font-weight:500;border:none;background:none;transition:color .2s}
+.bnav-btn.active{color:var(--accent)}
+.bnav-icon{font-size:22px;line-height:1}
+
+/* ── Pages ── */
+.page{display:none;padding-bottom:calc(var(--nav-h) + var(--safe-b) + 16px);min-height:100vh}
+.page.active{display:block}
+
+/* ── Day Tabs ── */
+.day-scroll{overflow-x:auto;white-space:nowrap;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);scrollbar-width:none}
+.day-scroll::-webkit-scrollbar{display:none}
+.day-pill{display:inline-flex;flex-direction:column;align-items:center;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border2);background:transparent;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;margin-right:6px;gap:1px;transition:all .2s}
+.day-pill.active{background:var(--t1);border-color:var(--t1);color:#fff}
+.day-pill small{font-size:10px;opacity:.7}
+
+/* ── Day Content ── */
+.day-content{padding:14px 16px}
+
+/* ── Weather Bar ── */
+.weather-bar{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.weather-icon{font-size:28px}
+.weather-temp{font-size:22px;font-weight:700}
+.weather-temp sup{font-size:13px;font-weight:400;color:var(--t2)}
+.weather-desc{font-size:12px;color:var(--t2);margin-top:1px}
+.weather-range{font-size:12px;color:var(--t3)}
+
+/* ── Map Section ── */
+.map-section{border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border);background:var(--bg3);position:relative}
+.map-frame{width:100%;height:200px;border:none;display:block}
+.map-route-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--t1);color:#fff;border:none;border-radius:0 0 12px 12px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;width:100%}
+.map-route-btn:active{opacity:.8}
+
+/* ── Section Label ── */
+.section-label{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin:16px 0 8px}
+
+/* ── Item Cards ── */
+.item-card{background:var(--bg2);border-radius:12px;border:1px solid var(--border);margin-bottom:10px;overflow:hidden;position:relative}
+.item-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.item-card.food::before{background:var(--c-food)}
+.item-card.cafe::before{background:var(--c-cafe)}
+.item-card.activity::before{background:var(--c-activity)}
+.item-card.sport::before{background:var(--c-sport)}
+.item-card.shopping::before{background:var(--c-shopping)}
+.item-card.medical::before{background:var(--c-medical)}
+.item-card.transport::before{background:var(--c-transport)}
+.item-card.done-card{opacity:.6}
+
+.card-body{display:flex;align-items:flex-start;padding:12px 12px 12px 16px;gap:10px}
+.card-time-col{flex-shrink:0;width:52px;text-align:right}
+.card-time{font-size:11px;font-weight:600;color:var(--t3);line-height:1.3}
+.card-main{flex:1;min-width:0}
+.card-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card-cat{font-size:16px;line-height:1}
+.card-name{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.card-name.strikethrough{text-decoration:line-through;color:var(--t3)}
+.card-desc{font-size:12px;color:var(--t2);margin-top:3px;line-height:1.5}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.tag{border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600}
+.tag-eat {background:#FFF0EB;color:#B5381E}
+.tag-buy {background:#EBF7EF;color:#1E7A43}
+.tag-menu{background:#EBF0FA;color:#1A4FA0}
+.tag-res {background:#F3EBFA;color:#6A2895}
+.tag-tip {background:#FBF5EB;color:#8A6420}
+.tag-confirmed{background:#E8F5E9;color:#1E7A43}
+
+.card-actions{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+.btn-nav{display:inline-flex;align-items:center;gap:4px;background:var(--t1);color:#fff;border:none;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none}
+.btn-vote{display:inline-flex;align-items:center;gap:4px;background:var(--bg3);color:var(--t2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;cursor:pointer}
+.btn-vote.voted{background:#FFF0EB;color:#B5381E;border-color:#F4C4B4}
+.vote-chips{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.vote-chip{background:var(--accent);color:#fff;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600}
+
+.card-right{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.btn-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .2s;flex-shrink:0}
+.btn-check.checked{background:#5A9A72;border-color:#5A9A72;color:#fff}
+.btn-del-c{background:none;border:none;cursor:pointer;color:var(--t3);font-size:15px;padding:2px}
+.btn-del-c:hover{color:#C96A3A}
+
+.card-note{border-top:1px solid var(--border);padding:10px 16px}
+.note-toggle{font-size:12px;color:var(--t3);cursor:pointer;display:flex;align-items:center;gap:4px}
+.note-input{width:100%;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px;font-family:inherit;resize:vertical;color:var(--t1);background:var(--bg)}
+.note-input:focus{outline:1.5px solid var(--accent);border-color:transparent}
+.note-save-btn{margin-top:6px;background:var(--t1);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer}
+.note-display{font-size:13px;color:var(--t1);background:#FFFBF0;border-radius:8px;padding:8px 10px;margin-top:6px;border-left:3px solid #D4A84A;line-height:1.5;cursor:pointer}
+
+/* ── Hotel Card ── */
+.hotel-card{background:linear-gradient(135deg,#2C3E50,#3498DB);color:#fff;border-radius:12px;padding:13px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.hotel-card .hico{font-size:22px}
+.hotel-card .hname{font-weight:700;font-size:14px}
+.hotel-card .harea{font-size:12px;opacity:.8}
+.hotel-card a{margin-left:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:5px 12px;font-size:12px;text-decoration:none;font-weight:600;flex-shrink:0}
+
+/* ── Progress ── */
+.day-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.progress-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
+.progress-label{font-size:12px;color:var(--t3);flex-shrink:0}
+
+/* ── Add Form ── */
+.add-card{background:var(--bg2);border:1.5px dashed var(--border2);border-radius:12px;padding:14px;margin-top:4px;display:none}
+.add-card.open{display:block}
+.btn-add-trigger{width:100%;padding:13px;border:1.5px dashed var(--border2);background:transparent;border-radius:12px;color:var(--t3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;transition:all .2s;font-family:inherit}
+.btn-add-trigger:hover{border-color:var(--accent);color:var(--accent)}
+.form-label{font-size:11px;font-weight:700;color:var(--t3);margin-bottom:4px;letter-spacing:.5px}
+.fi{border:1.5px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;background:#fff;color:var(--t1)}
+.fi:focus{outline:1.5px solid var(--accent);border-color:transparent}
+.fi-select{border:1.5px solid var(--border2);border-radius:8px;padding:9px 10px;font-size:15px;background:#fff;font-family:inherit}
+.fi-row{display:flex;gap:8px;margin-bottom:10px}
+.btn-parse{background:var(--ocean);color:#fff;border:none;border-radius:8px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.hint-text{font-size:12px;color:#1E7A43;margin-top:5px;display:none}
+.btn-form-submit{background:var(--t1);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;flex:1}
+.btn-form-cancel{background:var(--bg3);color:var(--t2);border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;flex:1}
+/* ── Edit Mode ── */
+.edit-fab{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);right:16px;z-index:150;background:#2C2C2C;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;gap:5px;transition:all .2s}
+.edit-fab.done{background:var(--accent)}
+.card-edit-bar{display:flex;align-items:center;gap:5px;padding:7px 12px;background:#FFFBF5;border-top:1px dashed var(--border2);flex-wrap:wrap}
+.btn-em{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--t2);font-family:inherit}
+.btn-em.edit{background:#EBF0FA;border-color:#B8C8EF;color:#1A4FA0}
+.btn-em.del{background:#FFF0EB;border-color:#F4C4B4;color:#B5381E}
+.btn-em:disabled{opacity:.3;cursor:default}
+.item-edit-form{border-top:2px solid var(--accent);padding:12px 14px;background:#FFFDF9}
+.isef-title{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.4px}
+.hotel-edit-bar{padding:10px 14px;border-top:1px dashed var(--border2);background:#FFFBF5;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── 資訊 Page ── */
+.info-section{padding:16px}
+.info-block{background:var(--bg2);border-radius:12px;border:1px solid var(--border);margin-bottom:14px;overflow:hidden}
+.info-block-header{padding:13px 16px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.info-row{padding:10px 16px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-row-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.info-row-label{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.4px}
+.info-row-val{font-size:14px;font-weight:500;margin-top:2px}
+.info-row-val a{color:var(--ocean);text-decoration:none}
+.emg-num{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:1px}
+
+/* ── 記帳 Page ── */
+.budget-section{padding:16px}
+.budget-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.budget-stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.budget-stat .big{font-size:24px;font-weight:800;color:var(--t1)}
+.budget-stat .lbl{font-size:11px;color:var(--t3);margin-top:2px}
+.expense-form{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px}
+.expense-form h3{font-size:14px;font-weight:700;margin-bottom:12px}
+.cat-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.cat-pill{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border2);font-size:13px;cursor:pointer;background:transparent;font-family:inherit}
+.cat-pill.sel{background:var(--t1);color:#fff;border-color:var(--t1)}
+.expense-list{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.expense-item{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)}
+.expense-item:last-child{border-bottom:none}
+.exp-cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.exp-desc{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exp-by{font-size:11px;color:var(--t3)}
+.exp-amt{font-size:14px;font-weight:700;flex-shrink:0;text-align:right;line-height:1.4}
+.exp-amt-sub{font-size:11px;font-weight:400;color:var(--t3)}
+.exp-del{background:none;border:none;cursor:pointer;color:var(--t3);font-size:14px;padding:2px 4px}
+/* ── 交通方式 ── */
+.card-via{font-size:11px;color:var(--t3);margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.via-badge{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;color:var(--t2)}
+
+/* ── Sync dot ── */
+.sync-dot{width:7px;height:7px;background:#5A9A72;border-radius:50%;display:inline-block;margin-left:4px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.offline-bar{background:#FED7D7;color:#C53030;text-align:center;padding:6px;font-size:12px;display:none}
+/* ── Leaflet map ── */
+.map-frame{width:100%;height:220px;border:none;display:block;z-index:1;position:relative}
+.leaflet-popup-content{font-size:13px;line-height:1.5;min-width:120px}
+.leaflet-popup-content a{color:var(--ocean);text-decoration:none;font-weight:600}
+.btn-loc{display:inline-flex;align-items:center;gap:3px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:5px 9px;font-size:12px;cursor:pointer;color:var(--t2);font-family:inherit}
+.btn-loc:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<!-- Name Modal -->
+<div id="nameModal" class="modal-mask">
+  <div class="modal-sheet">
+    <div class="modal-icon">🇰🇷</div>
+    <h3>你是哪位？</h3>
+    <p>輸入名字，讓大家看到你投票的景點</p>
+    <input class="modal-input" id="nameInput" type="text" placeholder="爸爸 / 媽媽 / 小涵…" maxlength="8" onkeydown="if(event.key==='Enter')saveName()">
+    <button class="modal-btn" onclick="saveName()">進入行程 →</button>
+  </div>
+</div>
+
+<div id="offlineBar" class="offline-bar">⚠️ 目前離線，恢復網路後自動同步</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-row">
+    <div>
+      <div class="header-title">🇰🇷 釜山 2026</div>
+      <div class="header-sub">6/17–6/23 · 6晚 <span id="syncStatus"></span></div>
+    </div>
+    <div class="user-chip" onclick="changeName()">👤 <span id="curName">…</span></div>
+  </div>
+</div>
+
+<!-- Pages -->
+<div id="pg-trip" class="page active">
+  <div class="day-scroll" id="dayTabs"></div>
+  <div id="dayContent"></div>
+</div>
+
+<div id="pg-info" class="page">
+  <div class="info-section">
+    <div class="section-label">✈️ 航班資訊</div>
+    <div class="info-block">
+      <div class="info-block-header">✈️ 去程</div>
+      <div class="info-row"><div class="info-row-icon">🛫</div><div><div class="info-row-label">出發</div><div class="info-row-val">6/17（三）台北 → 釜山</div></div></div>
+      <div class="info-row"><div class="info-row-icon">✏️</div><div><div class="info-row-label">航班號碼</div><div class="info-row-val" id="flight-dep">—（待填）</div></div></div>
+      <div class="info-row"><div class="info-row-icon">🛬</div><div><div class="info-row-label">返程</div><div class="info-row-val">6/23（二）釜山 → 台北</div></div></div>
+      <div class="info-row"><div class="info-row-icon">✏️</div><div><div class="info-row-label">返程航班</div><div class="info-row-val" id="flight-ret">—（待填）</div></div></div>
+    </div>
+
+    <div class="section-label">🏨 住宿資訊</div>
+    <div class="info-block">
+      <div class="info-block-header">6/17–6/20 · 西面 / 連山洞</div>
+      <div class="info-row"><div class="info-row-icon">🏨</div><div><div class="info-row-label">住宿</div><div class="info-row-val">Urbanstay 부산시청 或 K-Guesthouse Seomyeon 1</div></div></div>
+      <div class="info-row"><div class="info-row-icon">📍</div><div><div class="info-row-label">地址</div><div class="info-row-val"><a href="https://maps.app.goo.gl/u2bUGfvquwthYaCN9" target="_blank">Urbanstay 부산시청 地圖 ↗</a></div></div></div>
+    </div>
+    <div class="info-block">
+      <div class="info-block-header">6/20–6/23 · 廣安里</div>
+      <div class="info-row"><div class="info-row-icon">🏨</div><div><div class="info-row-label">住宿</div><div class="info-row-val">廣安里1號 或 Your Gwangalli (Airbnb)</div></div></div>
+      <div class="info-row"><div class="info-row-icon">📍</div><div><div class="info-row-label">地址</div><div class="info-row-val"><a href="https://maps.google.com/?q=광안리+부산" target="_blank">廣安里 地圖 ↗</a></div></div></div>
+    </div>
+
+    <div class="section-label">🆘 緊急聯絡</div>
+    <div class="info-block">
+      <div class="info-row"><div class="info-row-icon">🚔</div><div><div class="info-row-label">警察</div><div class="info-row-val emg-num">112</div></div></div>
+      <div class="info-row"><div class="info-row-icon">🚑</div><div><div class="info-row-label">消防 / 救護</div><div class="info-row-val emg-num">119</div></div></div>
+      <div class="info-row"><div class="info-row-icon">🏥</div><div><div class="info-row-label">외국인 관광 불편신고</div><div class="info-row-val emg-num">1330</div></div></div>
+      <div class="info-row"><div class="info-row-icon">🇹🇼</div><div><div class="info-row-label">台灣駐釜山辦事處</div><div class="info-row-val"><a href="tel:+82-51-463-7965">+82-51-463-7965</a></div></div></div>
+      <div class="info-row"><div class="info-row-icon">💳</div><div><div class="info-row-label">信用卡掛失（國際）</div><div class="info-row-val">VISA: 00798-14-272-1222<br>MC: 00798-14-272-1222</div></div></div>
+    </div>
+
+    <div class="section-label">📌 韓國旅遊注意事項</div>
+    <div class="info-block">
+      <div class="info-row"><div class="info-row-icon">💵</div><div><div class="info-row-val">建議在西面地下街或明洞換匯，匯率較好</div></div></div>
+      <div class="info-row"><div class="info-row-icon">🗺️</div><div><div class="info-row-val">韓國以 Naver Map 為主，Google Maps 導航功能有限，可用 comap.app 轉換</div></div></div>
+      <div class="info-row"><div class="info-row-icon">📱</div><div><div class="info-row-val">Kakao Pay / Naver Pay 可刷外國卡，大部分商店接受 Visa/Master</div></div></div>
+      <div class="info-row"><div class="info-row-icon">🧖</div><div><div class="info-row-val">汗蒸幕（Spa Land）建議網路預約，現場等待時間長</div></div></div>
+      <div class="info-row"><div class="info-row-icon">⚠️</div><div><div class="info-row-val">醫美診所建議出發前1個月 Naver 預約，現場等待風險高</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="pg-budget" class="page">
+  <div class="budget-section">
+    <div class="budget-summary" id="budgetSummary">
+      <div class="budget-stat"><div class="big" id="totalAmt">₩0</div><div class="lbl">總花費</div></div>
+      <div class="budget-stat"><div class="big" id="totalTWD">NT$0</div><div class="lbl">約台幣（×0.023）</div></div>
+    </div>
+    <div class="expense-form">
+      <h3>➕ 新增消費</h3>
+      <div class="cat-pills" id="catPills">
+        <button class="cat-pill sel" onclick="selCat(this,'食')">🍽️ 食</button>
+        <button class="cat-pill" onclick="selCat(this,'交')">🚌 交</button>
+        <button class="cat-pill" onclick="selCat(this,'住')">🏨 住</button>
+        <button class="cat-pill" onclick="selCat(this,'購')">🛍️ 購</button>
+        <button class="cat-pill" onclick="selCat(this,'票')">🎟️ 票</button>
+        <button class="cat-pill" onclick="selCat(this,'其他')">📌 其他</button>
+      </div>
+      <div class="fi-row" style="margin-bottom:10px">
+        <input class="fi" id="expAmt" type="number" placeholder="金額" style="flex:1">
+        <select class="fi-select" id="expCurr" style="flex-shrink:0;width:90px">
+          <option value="KRW">₩ 韓元</option>
+          <option value="TWD">NT$ 台幣</option>
+        </select>
+      </div>
+      <input class="fi" id="expDesc" type="text" placeholder="說明" style="width:100%;margin-bottom:10px">
+      <button onclick="addExpense()" style="width:100%;background:var(--t1);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:700;cursor:pointer">記帳</button>
+    </div>
+    <div class="expense-list" id="expenseList">
+      <div style="padding:20px;text-align:center;color:var(--t3);font-size:14px">尚無記錄</div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit FAB -->
+<button id="editFab" class="edit-fab" onclick="toggleEditMode()">✏️ 編輯</button>
+
+<!-- Bottom Nav -->
+<div class="bnav">
+  <button class="bnav-btn active" id="bnav-trip" onclick="switchPage('trip')"><span class="bnav-icon">📅</span>行程</button>
+  <button class="bnav-btn" id="bnav-info" onclick="switchPage('info')"><span class="bnav-icon">📋</span>資訊</button>
+  <button class="bnav-btn" id="bnav-budget" onclick="switchPage('budget')"><span class="bnav-icon">💰</span>記帳</button>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// ════════════════════════════════════════════
+// Firebase Config
+// ════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyBlXSTsNt-LFJgwekvxrPq3sEK7Nnq3liU",
+  authDomain:        "busan-trip-2026-373e1.firebaseapp.com",
+  databaseURL:       "https://busan-trip-2026-373e1-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "busan-trip-2026-373e1",
+  storageBucket:     "busan-trip-2026-373e1.firebasestorage.app",
+  messagingSenderId: "995680229150",
+  appId:             "1:995680229150:web:3e513ab5b0a2a7737ddb0f"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ════════════════════════════════════════════
+// 行程資料
+// ════════════════════════════════════════════
+const ITINERARY = [
+  {
+    id:'d0', date:'6/17', dow:'三', theme:'✈️ 抵達',
+    hotel:{ name:'Urbanstay 부산시청 或 K-Guesthouse', area:'連山洞 / 西面', url:'https://maps.app.goo.gl/u2bUGfvquwthYaCN9' },
+    items:[
+      { id:'i0', type:'food',      time:'晚餐',  cat:'🍽️', name:'西面豬肉湯飯街',  via:'🚇 地鐵 2號線 西面站 步行3分', desc:'서면 돼지국밥｜24小時，到韓第一餐必吃', map:'https://maps.google.com/?q=서면+돼지국밥+부산', lat:35.1579, lng:129.0581,
+        tips:[{t:'eat',v:'해운대 돼지국밥 推薦連鎖'},{t:'menu',v:'순대국밥（豬血腸湯）套餐'}] },
+      { id:'i1', type:'shopping',  time:'夜逛',  cat:'🛍️', name:'西面地下街',      via:'🚶 步行 5分', desc:'서면 지하상가｜換匯 + 逛街，感受釜山夜生活', map:'https://maps.google.com/?q=서면+지하상가+부산', lat:35.1577, lng:129.0573,
+        tips:[{t:'buy',v:'換匯在這比機場好很多'},{t:'tip',v:'週末人很多建議早點去'}] },
+    ]
+  },
+  {
+    id:'d1', date:'6/18', dow:'四', theme:'🌊 廣安里 + 海雲台',
+    hotel:{ name:'Urbanstay 부산시청 或 K-Guesthouse', area:'連山洞 / 西面', url:'https://maps.app.goo.gl/u2bUGfvquwthYaCN9' },
+    items:[
+      { id:'i0', type:'sport',     time:'晨 6:30', cat:'🏃', name:'廣安里海岸晨跑', via:'🚇 地鐵 2號線 廣安站 步行10分',      desc:'5–7km 沿海景，廣安大橋視角', map:'https://maps.google.com/?q=광안리해수욕장+부산', lat:35.1531, lng:129.1189 },
+      { id:'i1', type:'cafe',      time:'早餐',    cat:'☕', name:'廣安里海邊咖啡', via:'🚶 步行 5分',      desc:'跑完在海邊吃早餐看海景', map:'https://maps.google.com/?q=광안리+카페+부산', lat:35.1535, lng:129.1180 },
+      { id:'i2', type:'shopping',  time:'上午',    cat:'👟', name:'Compressport Raceday', desc:'釜山唯一跑步專門店，2025年5月新開！', map:'https://maps.app.goo.gl/compressport', lat:35.1528, lng:129.1195,
+        tips:[{t:'buy',v:'釜山限定配色跑鞋'},{t:'tip',v:'可問當地 Running Crew 活動資訊'}] },
+      { id:'i3', type:'food',      time:'午餐',    cat:'🍽️', name:'廣安里海鮮',          desc:'광안리 조개구이｜烤貝類現撈現吃', map:'https://maps.google.com/?q=광안리+조개구이', lat:35.1522, lng:129.1183,
+        tips:[{t:'menu',v:'가리비（扇貝）+ 전복（鮑魚）'}] },
+      { id:'i4', type:'activity',  time:'下午',    cat:'🏙️', name:'海雲台 XtheSKY',      desc:'釜山最高觀景台，360°全景', map:'https://maps.google.com/?q=해운대+엑스더스카이', lat:35.1638, lng:129.1637,
+        tips:[{t:'res',v:'建議 Klook 提前購票較便宜'},{t:'tip',v:'黃昏時段景色最美'}] },
+      { id:'i5', type:'activity',  time:'傍晚',    cat:'🏖️', name:'海雲台海水浴場散步',  desc:'釜山代表性海灘，夕陽景色絕美', map:'https://maps.google.com/?q=해운대해수욕장', lat:35.1588, lng:129.1603 },
+      { id:'i6', type:'food',      time:'晚餐',    cat:'🍽️', name:'海雲台傳統市場',      desc:'해운대전통시장｜白鍾元推薦尚國家飯捲', map:'https://maps.google.com/?q=해운대전통시장', lat:35.1601, lng:129.1620,
+        tips:[{t:'eat',v:'상국이네 김밥（尚國家飯捲）必買'},{t:'eat',v:'씨앗호떡（種子餅）必吃'}] },
+    ]
+  },
+  {
+    id:'d2', date:'6/19', dow:'五', theme:'🎨 甘川洞 + 南浦 + 松島',
+    hotel:{ name:'Urbanstay 부산시청 或 K-Guesthouse', area:'連山洞 / 西面', url:'https://maps.app.goo.gl/u2bUGfvquwthYaCN9' },
+    items:[
+      { id:'i0', type:'activity',  time:'早 9:00', cat:'🎨', name:'甘川洞文化村', via:'🚌 公車 2-3號 甘川洞下車',           desc:'감천문화마을｜釜山聖托里尼，早去人少', map:'https://maps.google.com/?q=감천문화마을+부산', lat:35.0976, lng:129.0103,
+        tips:[{t:'buy',v:'입장료 필요 없음（免門票）'},{t:'tip',v:'09:00 入場人最少，10:30後爆炸多'}] },
+      { id:'i1', type:'food',      time:'午餐',    cat:'🦞', name:'札嘎其市場', via:'🚇 地鐵 1號線 자갈치站',             desc:'자갈치시장｜韓國最大海鮮市場，現撈現吃', map:'https://maps.google.com/?q=자갈치시장+부산', lat:35.0971, lng:129.0296,
+        tips:[{t:'eat',v:'帝王蟹 대게'},{t:'menu',v:'회（生魚片）拼盤拼點 CP 值高'}] },
+      { id:'i2', type:'activity',  time:'下午',    cat:'🎬', name:'BIFF 廣場', via:'🚶 步行 5分（자갈치站旁）',              desc:'부산국제영화제광장｜종자떡（種子餅）必吃！', map:'https://maps.google.com/?q=BIFF광장+부산', lat:35.0988, lng:129.0265,
+        tips:[{t:'eat',v:'씨앗호떡（종자떡 種子餅）1000₩ 必吃'},{t:'buy',v:'광복로 인근 伴手禮街'}] },
+      { id:'i5', type:'food',      time:'晚餐',    cat:'🥩', name:'삼환축산 韓式烤肉', via:'🚶 步行 3分（BIFF廣場旁）',        desc:'南浦洞人氣烤肉，BIFF 廣場步行即達', map:'https://maps.app.goo.gl/fTuoGYfksRV36wxs8', lat:35.0990, lng:129.0297,
+        tips:[{t:'menu',v:'곱창전골（腸胃鍋）招牌必點'},{t:'eat',v:'삼겹살（五花肉）現烤'}] },
+      { id:'i3', type:'activity',  time:'下午晚',  cat:'🚡', name:'松島海上纜車 + 天空步道', via:'🚕 計程車 20分 或 公車 30號', desc:'송도해상케이블카｜透明玻璃地板！龍宮雲橋', map:'https://maps.google.com/?q=송도해상케이블카+부산', lat:35.0726, lng:129.0133,
+        tips:[{t:'res',v:'建議 Klook 購票比現場便宜 20%'}] },
+      { id:'i4', type:'shopping',  time:'晚上',    cat:'🛍️', name:'南浦洞逛街', via:'🚇 地鐵 1號線 南浦站',             desc:'남포동｜服飾街 + 土特產', map:'https://maps.google.com/?q=남포동+부산', lat:35.0978, lng:129.0294 },
+    ]
+  },
+  {
+    id:'d3', date:'6/20', dow:'六', theme:'💉 醫美 + 田浦 → 搬廣安里',
+    hotel:{ name:'廣安里1號 或 Your Gwangalli', area:'廣安里（今天換住）', url:'https://maps.google.com/?q=광안리1호+부산' },
+    items:[
+      { id:'i0', type:'medical',   time:'上午',    cat:'💉', name:'西面醫美一條街', via:'🚇 地鐵 2號線 西面站',          desc:'서면 청춘거리｜建議提前1個月 Naver 預約', map:'https://maps.google.com/?q=서면+청춘거리+부산', lat:35.1568, lng:129.0578,
+        tips:[{t:'res',v:'⚠️ 必須提前 Naver 預約，否則當天等待 2+ 小時'},{t:'tip',v:'診療後當天避免日曬'}] },
+      { id:'i1', type:'medical',   time:'診所①',   cat:'🏥', name:'金陽濟皮膚科（推薦）', via:'🚶 步行 5分（西面站旁）',    desc:'금양제피부과｜40年老牌，中文翻譯，可退稅', map:'https://maps.google.com/?q=금양제피부과+부산', lat:35.1572, lng:129.0591,
+        tips:[{t:'res',v:'官網預約：geumyang.com'},{t:'buy',v:'診後可辦 VAT 退稅（需護照）'}] },
+      { id:'i2', type:'medical',   time:'診所②',   cat:'🏥', name:'Fillstok 필스톡（替代）', via:'🚶 步行 3分', desc:'필스톡 서면｜西面站直達，中文，院長親自操刀', map:'https://maps.google.com/?q=필스톡+서면+부산', lat:35.1580, lng:129.0584 },
+      { id:'i3', type:'cafe',      time:'下午',     cat:'☕', name:'田浦咖啡街', via:'🚇 地鐵 1號線 田浦站 步行5分',               desc:'전포카페거리｜比首爾聖水洞更好逛！小眾選物店', map:'https://maps.google.com/?q=전포카페거리+부산', lat:35.1561, lng:129.0630,
+        tips:[{t:'buy',v:'리리스토어 Lili Store（설계사 編集 Shop）'},{t:'tip',v:'週末人多，平日下午最舒適'}] },
+      { id:'i4', type:'shopping',  time:'下午',     cat:'🛍️', name:'리리스토어 Lili Store', via:'🚶 步行 5分（田浦咖啡街內）',   desc:'부산진구 동성로 69｜韓國設計師品牌選物店', map:'https://maps.google.com/?q=리리스토어+전포+부산', lat:35.1555, lng:129.0618 },
+      { id:'i5', type:'transport', time:'換住',     cat:'🏨', name:'搬到廣安里住宿', via:'🚇 地鐵 2號線 廣安站',          desc:'廣安里夜景 + 廣安大橋點燈超美！', map:'https://maps.google.com/?q=광안리+부산', lat:35.1531, lng:129.1189 },
+    ]
+  },
+  {
+    id:'d4', date:'6/21', dow:'日', theme:'🦀 機張 + ARTE + 無人機秀',
+    hotel:{ name:'廣安里1號 或 Your Gwangalli', area:'廣安里', url:'https://maps.google.com/?q=광안리1호+부산' },
+    items:[
+      { id:'i0', type:'sport',     time:'晨 6:30', cat:'🏃', name:'二妓臺海岸步道晨跑', via:'🚕 計程車 20分（廣안里出發）',  desc:'이기대해안산책로｜釜山最美跑步路線，懸崖海景', map:'https://maps.google.com/?q=이기대해안산책로+부산', lat:35.1123, lng:129.1185,
+        tips:[{t:'tip',v:'全長 4.7km，單程 40 分鐘，建議帶水'},{t:'tip',v:'早晨有煙霧海景，超夢幻'}] },
+      { id:'i1', type:'food',      time:'上午',     cat:'🦀', name:'機張螃蟹街', via:'🚌 東海線 機張站 步行10分',          desc:'기장 대게거리｜現煮大螃蟹，釜山必吃海鮮', map:'https://maps.google.com/?q=기장+대게거리', lat:35.2459, lng:129.2135,
+        tips:[{t:'eat',v:'대게（雪蟹）和 킹크랩（帝王蟹）比較'},{t:'tip',v:'現場點選活蟹，當場秤重計價'}] },
+      { id:'i2', type:'activity',  time:'下午',     cat:'🌊', name:'오시리아 海岸步道', via:'🚶 步行（機張周邊）',    desc:'오시리아 해안산책로｜幾乎沒遊客，絕美海岸秘境', map:'https://maps.google.com/?q=오시리아해안산책로+기장', lat:35.2305, lng:129.2248 },
+      { id:'i3', type:'activity',  time:'傍晚',     cat:'🎆', name:'ARTE MUSEUM 釜山', via:'🚇 地鐵 2號線 廣安站 步行5分',    desc:'아르떼뮤지엄 부산｜沉浸式數位藝術展', map:'https://maps.google.com/?q=아르떼뮤지엄+부산', lat:35.1538, lng:129.1180,
+        tips:[{t:'res',v:'建議官網或 Klook 提前購票'},{t:'tip',v:'晚上燈光效果更好，建議 18:00 後入場'}] },
+      { id:'i4', type:'activity',  time:'夜 20:00', cat:'✨', name:'廣안里無人機秀', via:'🚶 步行（廣安里海灘）',      desc:'夏天 20:00 / 22:00 各一場｜週日確認有', map:'https://maps.google.com/?q=광안리해수욕장+부산', lat:35.1531, lng:129.1189,
+        tips:[{t:'tip',v:'廣安里海灘最佳觀賞位置：海灘中段'},{t:'tip',v:'提前 30 分鐘佔位'}] },
+    ]
+  },
+  {
+    id:'d5', date:'6/22', dow:'一', theme:'🎿 Luge + 汗蒸幕',
+    hotel:{ name:'廣안里1號 或 Your Gwangalli', area:'廣安里', url:'https://maps.google.com/?q=광안리1호+부산' },
+    items:[
+      { id:'i0', type:'activity',  time:'上午',      cat:'🎿', name:'Skyline Luge 釜山 ✅', via:'🚇 東海線 日光站→公車或計程車',   desc:'스카이라인루지 기장｜斜坡滑車！已確認', map:'https://maps.google.com/?q=해운대+스카이라인루지', confirmed:true, lat:35.2078, lng:129.2018,
+        tips:[{t:'res',v:'Klook 票價比現場便宜約 30%'},{t:'tip',v:'建議乘 Skylift 上山，享受海景纜車'}] },
+      { id:'i1', type:'food',      time:'午餐',       cat:'🍽️', name:'Centum City 美食街', via:'🚇 地鐵 2號線 Centum City站',      desc:'신세계백화점 센텀시티｜韓國最大百貨，選擇超多', map:'https://maps.google.com/?q=신세계백화점+센텀시티+부산', lat:35.1601, lng:129.1331 },
+      { id:'i2', type:'shopping',  time:'下午',       cat:'🛍️', name:'Centum City 逛街', via:'🚶 步行（同站）',         desc:'Andar｜XEXYMIX｜MLB Korea｜韓國運動品牌集中地', map:'https://maps.google.com/?q=센텀시티+쇼핑몰+부산', lat:35.1598, lng:129.1338,
+        tips:[{t:'buy',v:'Andar 瑜珈褲｜XEXYMIX 韓版 Lululemon'},{t:'buy',v:'MLB Korea 帽子、球鞋'}] },
+      { id:'i3', type:'activity',  time:'下午→晚', cat:'♨️', name:'新世界 Spa Land 汗蒸幕 ✅', via:'🚶 步行（Centum City內）', desc:'신세계 스파랜드｜世界最大汗蒸幕，3–4小時最過癮', map:'https://maps.google.com/?q=신세계+스파랜드+부산', confirmed:true, lat:35.1605, lng:129.1325,
+        tips:[{t:'res',v:'⚠️ 必須官網預約，週末易滿'},{t:'tip',v:'含毛巾 + 汗蒸衣，攜帶換洗衣物'},{t:'tip',v:'入場後可待 4 小時，超時另計費'}] },
+    ]
+  },
+  {
+    id:'d6', date:'6/23', dow:'二', theme:'✈️ 返台',
+    hotel:null,
+    items:[
+      { id:'i0', type:'cafe',      time:'早餐', cat:'☕', name:'廣안里最後一杯咖啡', via:'🚶 步行（廣安里海邊）', desc:'海景早餐，看廣안大橋，依依不捨', map:'https://maps.google.com/?q=광안리+카페+부산', lat:35.1535, lng:129.1175 },
+      { id:'i1', type:'transport', time:'出發', cat:'✈️', name:'金海國際機場', via:'🚇 地鐵 2號線→輕軌 空港站',       desc:'김해국제공항｜安全回台灣！', map:'https://maps.google.com/?q=김해국제공항', lat:35.1794, lng:128.9383,
+        tips:[{t:'tip',v:'機場免稅店最後血拚'},{t:'buy',v:'市廳站附近超市買泡麵/零食帶回'}] },
+    ]
+  }
+];
+
+// ════════════════════════════════════════════
+// 天氣
+// ════════════════════════════════════════════
+const WMO = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'⛈️',80:'🌦️',81:'🌧️',95:'⛈️'};
+const WMO_TXT = {0:'晴',1:'晴時多雲',2:'多雲',3:'陰',45:'霧',51:'毛毛雨',53:'小雨',55:'中雨',61:'小雨',63:'中雨',65:'大雨',80:'陣雨',81:'大雨陣',95:'雷雨'};
+// 6月釜山典型天氣（備用）
+const JUNE_TYPICAL = [
+  {max:25,min:19,code:2},{max:26,min:20,code:1},{max:27,min:21,code:2},
+  {max:25,min:20,code:61},{max:24,min:19,code:80},{max:27,min:21,code:1},{max:26,min:20,code:2}
+];
+let weatherData = {};
+let dayMap = null;
+let dayMarkers = {};
+const CAT_COLORS = {food:'#D4845A',cafe:'#B89B5E',activity:'#4A90A4',sport:'#5A9A72',shopping:'#8B6BAE',medical:'#D4607A',transport:'#8A9AA8'};
+
+async function fetchWeather() {
+  try {
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.17&longitude=129.07&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul&start_date=2026-06-17&end_date=2026-06-23&forecast_days=16');
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    d.daily.time.forEach((date,i) => {
+      weatherData[date] = { max:Math.round(d.daily.temperature_2m_max[i]), min:Math.round(d.daily.temperature_2m_min[i]), code:d.daily.weathercode[i] };
+    });
+    if (currentPage==='trip') renderDay(currentDay);
+  } catch { /* use typical */ }
+}
+
+function getWeather(dayIdx) {
+  const dateStr = `2026-06-${17+dayIdx}`.replace(/(\d{4}-\d{2}-)(\d)$/, '$10$2');
+  const d = '2026-06-' + String(17+dayIdx).padStart(2,'0');
+  return weatherData[d] || JUNE_TYPICAL[dayIdx] || JUNE_TYPICAL[0];
+}
+
+// ════════════════════════════════════════════
+// 狀態
+// ════════════════════════════════════════════
+let currentDay  = 0;
+let currentPage = 'trip';
+let userName    = '';
+let fbData      = {};
+let openNotes   = {};
+let selExpCat   = '食';
+let editMode     = false;
+let editingItem  = null; // {dayId, key, isCustom}
+let editingHotel = null; // dayId
+
+// ════════════════════════════════════════════
+// 頁面導航
+// ════════════════════════════════════════════
+function switchPage(pg) {
+  currentPage = pg;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`pg-${pg}`).classList.add('active');
+  document.getElementById(`bnav-${pg}`).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ════════════════════════════════════════════
+// 名字
+// ════════════════════════════════════════════
+function saveName() {
+  const v = document.getElementById('nameInput').value.trim();
+  if (!v) return;
+  userName = v;
+  localStorage.setItem('bsn_name', userName);
+  document.getElementById('curName').textContent = userName;
+  document.getElementById('nameModal').style.display = 'none';
+  initFb();
+}
+function changeName() {
+  const n = prompt('修改名字：', userName);
+  if (n && n.trim()) { userName=n.trim(); localStorage.setItem('bsn_name',userName); document.getElementById('curName').textContent=userName; renderDay(currentDay); }
+}
+
+// ════════════════════════════════════════════
+// Firebase
+// ════════════════════════════════════════════
+function initFb() {
+  const sync = document.getElementById('syncStatus');
+  db.ref('/').on('value', snap => {
+    fbData = snap.val() || {};
+    sync.innerHTML = `<span class="sync-dot"></span>`;
+    if (currentPage==='trip') renderDay(currentDay);
+    if (currentPage==='budget') renderExpenses();
+  }, () => { sync.textContent='⚠️'; });
+}
+
+// votes
+function toggleVote(dayId, itemId) {
+  if (!userName) return;
+  const cur = fbData.votes?.[`${dayId}_${itemId}`]?.[userName];
+  db.ref(`votes/${dayId}_${itemId}/${userName}`).set(cur ? null : true);
+}
+function getVoters(dayId, itemId) {
+  const v = fbData.votes?.[`${dayId}_${itemId}`]; return v ? Object.keys(v).filter(k=>v[k]) : [];
+}
+
+// done
+function toggleDone(dayId, itemId) { db.ref(`done/${dayId}_${itemId}`).set(!(fbData.done?.[`${dayId}_${itemId}`])); }
+function isDone(dayId, itemId) { return !!(fbData.done?.[`${dayId}_${itemId}`]); }
+
+// notes
+function getNote(dayId, itemId) { return fbData.notes?.[`${dayId}_${itemId}`] || ''; }
+function saveNote(dayId, itemId) { db.ref(`notes/${dayId}_${itemId}`).set(document.getElementById(`nt_${dayId}_${itemId}`)?.value || null); }
+
+// custom
+function getCustom(dayId) {
+  const raw = fbData.custom?.[dayId];
+  return raw ? Object.entries(raw).map(([k,v])=>({...v,_k:k})) : [];
+}
+function addCustom(dayId) {
+  const g = id => document.getElementById(`cf_${id}_${dayId}`)?.value?.trim()||'';
+  const name = g('name'); if (!name) { alert('請輸入名稱'); return; }
+  const lat = parseFloat(document.getElementById(`cf_lat_${dayId}`)?.value)||null;
+  const lng = parseFloat(document.getElementById(`cf_lng_${dayId}`)?.value)||null;
+  db.ref(`custom/${dayId}`).push({ name, time:g('time')||'自訂', desc:g('desc'), via:g('via'), cat:g('cat')||'📍', map:g('map')||g('mapurl'), lat, lng, type:'activity', by:userName, at:Date.now() });
+  document.getElementById(`addForm_${dayId}`).classList.remove('open');
+  ['name','time','desc','map','mapurl'].forEach(f=>{const el=document.getElementById(`cf_${f}_${dayId}`);if(el)el.value='';});
+}
+function delCustom(dayId, key) { if(confirm('刪除？')) db.ref(`custom/${dayId}/${key}`).remove(); }
+
+// ── Smart map URL parse ──
+function parseMapUrl(url) {
+  const m1 = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m1) return { lat:parseFloat(m1[1]), lng:parseFloat(m1[2]) };
+  const m2 = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if (m2) return { lat:parseFloat(m2[1]), lng:parseFloat(m2[2]) };
+  return null;
+}
+function suggestDay(lat, lng) {
+  let best=0, bestD=Infinity;
+  ITINERARY.forEach((day,i)=>{
+    const pts=day.items.filter(it=>it.lat);
+    if (!pts.length) return;
+    const aLat=pts.reduce((s,p)=>s+p.lat,0)/pts.length, aLng=pts.reduce((s,p)=>s+p.lng,0)/pts.length;
+    const d=Math.hypot(lat-aLat,lng-aLng);
+    if (d<bestD){bestD=d;best=i;}
+  });
+  return best;
+}
+function handleMapPaste(dayId) {
+  const url=(document.getElementById(`cf_mapurl_${dayId}`)?.value||'').trim();
+  const mapField=document.getElementById(`cf_map_${dayId}`);
+  if (mapField) mapField.value=url;
+  const coords=parseMapUrl(url);
+  if (coords) {
+    const lEl=document.getElementById(`cf_lat_${dayId}`), nEl=document.getElementById(`cf_lng_${dayId}`);
+    if (lEl) lEl.value=coords.lat; if (nEl) nEl.value=coords.lng;
+    const suggested=suggestDay(coords.lat,coords.lng);
+    const hint=document.getElementById(`cf_hint_${dayId}`);
+    if (hint) { hint.textContent=`📍 依位置建議：${ITINERARY[suggested].date}（${ITINERARY[suggested].theme}）`; hint.style.display='block'; }
+  }
+}
+
+
+// ════════════════════════════════════════════
+// 編輯模式
+// ════════════════════════════════════════════
+function toggleEditMode() {
+  editMode = !editMode;
+  editingItem = null; editingHotel = null;
+  const fab = document.getElementById('editFab');
+  if (fab) { fab.textContent = editMode ? '✓ 完成編輯' : '✏️ 編輯'; fab.className = 'edit-fab' + (editMode?' done':''); }
+  renderDay(currentDay);
+}
+
+// 取得排序後的所有 items（base + custom），套用 Firebase 的 order
+function getOrderedItems(dayId, allItems) {
+  const order = fbData.order?.[dayId];
+  if (!order || !order.length) return allItems;
+  const map = {};
+  allItems.forEach(it => { map[it.id || it._k] = it; });
+  const result = order.map(id => map[id]).filter(Boolean);
+  // 把還不在 order 裡的新 item 補到最後
+  const inOrder = new Set(order);
+  allItems.forEach(it => { const k = it.id||it._k; if (!inOrder.has(k)) result.push(it); });
+  return result;
+}
+
+// 套用 Firebase edits overlay 到 item
+function applyEdits(dayId, item) {
+  const key = item.id || item._k;
+  const ov = fbData.edits?.[dayId]?.[key];
+  return ov ? {...item, ...ov} : item;
+}
+
+function isHidden(dayId, key) { return !!(fbData.hidden?.[`${dayId}_${key}`]); }
+
+function moveItem(dayId, key, dir) {
+  const day = ITINERARY.find(d => d.id === dayId);
+  const allItems = [...(day?.items||[]), ...getCustom(dayId)];
+  const ordered = getOrderedItems(dayId, allItems);
+  const ids = ordered.map(it => it.id || it._k);
+  const idx = ids.indexOf(key);
+  if (idx < 0) return;
+  const ni = idx + dir;
+  if (ni < 0 || ni >= ids.length) return;
+  [ids[idx], ids[ni]] = [ids[ni], ids[idx]];
+  db.ref(`order/${dayId}`).set(ids);
+}
+
+function deleteItem(dayId, key, isCustom) {
+  if (!confirm('確認刪除這個景點？')) return;
+  if (isCustom) db.ref(`custom/${dayId}/${key}`).remove();
+  else db.ref(`hidden/${dayId}_${key}`).set(true);
+}
+
+function openItemEdit(dayId, key, isCustom) {
+  editingItem = {dayId, key, isCustom};
+  renderDay(currentDay);
+  setTimeout(() => document.getElementById('ief_name')?.focus(), 100);
+}
+
+function saveItemEdit(dayId, key, isCustom) {
+  const g = id => (document.getElementById('ief_'+id)?.value?.trim() || '');
+  const lat = parseFloat(document.getElementById('ief_lat')?.value) || null;
+  const lng = parseFloat(document.getElementById('ief_lng')?.value) || null;
+  const data = {};
+  ['name','time','cat','desc','via','map'].forEach(f => { const v=g(f); if(v) data[f]=v; });
+  if (lat && lng) { data.lat=lat; data.lng=lng; }
+  if (isCustom) db.ref(`custom/${dayId}/${key}`).update(data);
+  else db.ref(`edits/${dayId}/${key}`).set(data);
+  editingItem = null;
+}
+
+// 住宿編輯
+function openHotelEdit(dayId) { editingHotel = dayId; renderDay(currentDay); }
+function saveHotelEdit(dayId) {
+  const name = document.getElementById('eh_name')?.value?.trim();
+  const area = document.getElementById('eh_area')?.value?.trim();
+  const url  = document.getElementById('eh_url')?.value?.trim();
+  db.ref(`hotel/${dayId}`).set({ name:name||'', area:area||'', url:url||'' });
+  editingHotel = null;
+}
+function cancelHotelEdit() { editingHotel = null; renderDay(currentDay); }
+
+// ════════════════════════════════════════════
+// 記帳
+// ════════════════════════════════════════════
+const EXP_COLORS = {'食':'#D4845A','交':'#4A90A4','住':'#5A9A72','購':'#8B6BAE','票':'#C4A35A','其他':'#8A9AA8'};
+function selCat(el, cat) {
+  selExpCat = cat;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+}
+const KRW_TO_TWD = 0.023; // 1₩ ≈ 0.023 NT$
+function toKRW(amt, currency) { return currency==='TWD' ? Math.round(amt / KRW_TO_TWD) : amt; }
+function toTWD(amt, currency) { return currency==='TWD' ? amt : Math.round(amt * KRW_TO_TWD); }
+
+function addExpense() {
+  const amt = parseInt(document.getElementById('expAmt').value);
+  const desc = document.getElementById('expDesc').value.trim();
+  const currency = document.getElementById('expCurr').value;
+  if (!amt || !desc) { alert('請填金額和說明'); return; }
+  db.ref('budget').push({ amt, currency, desc, cat:selExpCat, by:userName||'?', at:Date.now() });
+  document.getElementById('expAmt').value=''; document.getElementById('expDesc').value='';
+}
+function delExpense(key) { if(confirm('刪除？')) db.ref(`budget/${key}`).remove(); }
+function renderExpenses() {
+  const items = fbData.budget ? Object.entries(fbData.budget).sort((a,b)=>b[1].at-a[1].at) : [];
+  const totalKRW = items.reduce((s,[,v])=>s+toKRW(v.amt, v.currency||'KRW'),0);
+  const totalTWD = items.reduce((s,[,v])=>s+toTWD(v.amt, v.currency||'KRW'),0);
+  document.getElementById('totalAmt').textContent = '₩' + totalKRW.toLocaleString();
+  document.getElementById('totalTWD').textContent = 'NT$' + totalTWD.toLocaleString();
+  if (!items.length) { document.getElementById('expenseList').innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:14px">尚無記錄</div>'; return; }
+  document.getElementById('expenseList').innerHTML = items.map(([k,v])=>{
+    const curr = v.currency||'KRW';
+    const primary   = curr==='KRW' ? `₩${v.amt.toLocaleString()}` : `NT$${v.amt.toLocaleString()}`;
+    const secondary = curr==='KRW' ? `≈NT$${toTWD(v.amt,'KRW').toLocaleString()}` : `≈₩${toKRW(v.amt,'TWD').toLocaleString()}`;
+    return `
+    <div class="expense-item">
+      <div class="exp-cat-dot" style="background:${EXP_COLORS[v.cat]||'#aaa'}"></div>
+      <div style="flex:1;min-width:0">
+        <div class="exp-desc">${v.desc}</div>
+        <div class="exp-by">${v.cat} · ${v.by}</div>
+      </div>
+      <div class="exp-amt">${primary}<div class="exp-amt-sub">${secondary}</div></div>
+      <button class="exp-del" onclick="delExpense('${k}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// 地圖
+// ════════════════════════════════════════════
+function getDayCenter(items) {
+  const pts = items.filter(i=>i.lat&&i.lng);
+  if (!pts.length) return null;
+  const lat=pts.reduce((s,p)=>s+p.lat,0)/pts.length;
+  const lng=pts.reduce((s,p)=>s+p.lng,0)/pts.length;
+  const latSpan=Math.max(...pts.map(p=>p.lat))-Math.min(...pts.map(p=>p.lat));
+  const lngSpan=Math.max(...pts.map(p=>p.lng))-Math.min(...pts.map(p=>p.lng));
+  const span=Math.max(latSpan,lngSpan);
+  const zoom = span>0.2?11:span>0.1?12:span>0.04?13:14;
+  return { lat:lat.toFixed(5), lng:lng.toFixed(5), zoom };
+}
+function getRouteUrl(items) {
+  const pts=items.filter(i=>i.lat&&i.lng);
+  if (!pts.length) return null;
+  if (pts.length===1) return `https://maps.google.com/?q=${pts[0].lat},${pts[0].lng}`;
+  return `https://www.google.com/maps/dir/${pts.map(p=>`${p.lat},${p.lng}`).join('/')}`;
+}
+
+function initDayMap(items) {
+  if (dayMap) { dayMap.remove(); dayMap = null; }
+  dayMarkers = {};
+  const pts = items.filter(i => i.lat && i.lng);
+  if (!pts.length) return;
+
+  const center = getDayCenter(items);
+  dayMap = L.map('dayMapEl', { zoomControl: true, attributionControl: false });
+  // CartoDB Voyager 圖磚（接近 Google Maps 風格，免費）
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19, subdomains: 'abcd'
+  }).addTo(dayMap);
+
+  pts.forEach((item, i) => {
+    const num   = i + 1;
+    const color = CAT_COLORS[item.type] || '#4A90A4';
+    const icon  = L.divIcon({
+      className: '',
+      html: `<div style="background:${color};color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.35);border:2.5px solid #fff;font-family:-apple-system,sans-serif">${num}</div>`,
+      iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -16]
+    });
+    const navUrl = item.map || `https://maps.google.com/?q=${item.lat},${item.lng}`;
+    const m = L.marker([item.lat, item.lng], { icon })
+      .addTo(dayMap)
+      .bindPopup(`<b>${item.cat||''} ${item.name}</b><br><span style="color:#888;font-size:11px">${item.time||''}</span><br><a href="${navUrl}" target="_blank">🧭 導航</a>`);
+    const id = item.id || item._k || String(i);
+    dayMarkers[id] = m;
+  });
+
+  // 畫路線
+  if (pts.length > 1) {
+    L.polyline(pts.map(p => [p.lat, p.lng]), {
+      color: '#C96A3A', weight: 2.5, opacity: 0.55, dashArray: '7,6'
+    }).addTo(dayMap);
+  }
+
+  // 自動縮放到所有點
+  if (pts.length === 1) {
+    dayMap.setView([pts[0].lat, pts[0].lng], 15);
+  } else {
+    dayMap.fitBounds(pts.map(p => [p.lat, p.lng]), { padding: [24, 24] });
+  }
+}
+
+function focusPin(id, lat, lng) {
+  const mapEl = document.getElementById('dayMapEl');
+  if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (!dayMap) return;
+  setTimeout(() => {
+    dayMap.setView([lat, lng], 16, { animate: true, duration: 0.5 });
+    const m = dayMarkers[id];
+    if (m) m.openPopup();
+  }, 300);
+}
+
+// ════════════════════════════════════════════
+// 渲染
+// ════════════════════════════════════════════
+function renderTabs() {
+  const c = document.getElementById('dayTabs');
+  c.innerHTML = ITINERARY.map((d,i)=>`
+    <button class="day-pill ${currentDay===i?'active':''}" onclick="switchDay(${i})">
+      ${d.date}<small>${d.dow}</small>
+    </button>`).join('');
+}
+
+function switchDay(i) {
+  currentDay=i; renderTabs(); renderDay(i); window.scrollTo(0,0);
+}
+
+function tagHtml(tips=[]) {
+  const map={eat:'tag-eat',buy:'tag-buy',menu:'tag-menu',res:'tag-res',tip:'tag-tip'};
+  const label={eat:'必吃',buy:'必買',menu:'必點',res:'預約',tip:'注意'};
+  return tips.map(t=>`<span class="tag ${map[t.t]||'tag-tip'}">${label[t.t]||''} ${t.v}</span>`).join('');
+}
+
+function itemCard(day, item, isCustom=false, ck=null, idx=0, total=0) {
+  const key   = isCustom ? ck : item.id;
+  const done  = isDone(day.id, key);
+  const voters= getVoters(day.id, key);
+  const note  = getNote(day.id, key);
+  const noteOpen = openNotes[`${day.id}_${key}`];
+  const myVoted  = voters.includes(userName);
+  const type  = item.type || 'activity';
+  const navUrl= item.map || '';
+  const tips  = item.tips || [];
+  const isEditingThis = editMode && editingItem?.dayId===day.id && editingItem?.key===key;
+
+  let html = `
+  <div class="item-card ${type} ${done?'done-card':''}">
+    <div class="card-body">
+      <div class="card-time-col"><div class="card-time">${item.time}</div></div>
+      <div class="card-main">
+        <div class="card-name-row">
+          <span class="card-cat">${item.cat||'📍'}</span>
+          <span class="card-name ${done?'strikethrough':''}">${item.name}</span>
+          ${item.confirmed?'<span class="tag tag-confirmed">✓已確認</span>':''}
+          ${isCustom?`<span style="font-size:10px;color:var(--t3)">by ${item.by||'?'}</span>`:''}
+        </div>
+        ${item.desc?`<div class="card-desc">${item.desc}</div>`:''}
+        ${item.via?`<div class="card-via"><span class="via-badge">${item.via}</span></div>`:''}
+        ${tips.length?`<div class="card-tags">${tagHtml(tips)}</div>`:''}
+        <div class="card-actions">
+          ${navUrl?`<a class="btn-nav" href="${navUrl}" target="_blank">🧭 導航</a>`:''}
+          ${(item.lat&&item.lng)?`<button class="btn-loc" onclick="focusPin('${key}',${item.lat},${item.lng})">📍 地圖</button>`:''}
+          <button class="btn-vote ${myVoted?'voted':''}" onclick="toggleVote('${day.id}','${key}')">
+            ❤️ 想去${voters.length?` (${voters.length})`:''}</button>
+        </div>
+        ${voters.length?`<div class="vote-chips">${voters.map(v=>`<span class="vote-chip">${v}</span>`).join('')}</div>`:''}
+      </div>
+      <div class="card-right">
+        <button class="btn-check ${done?'checked':''}" onclick="toggleDone('${day.id}','${key}')">${done?'✓':''}</button>
+      </div>
+    </div>
+    <div class="card-note">
+      <div class="note-toggle" onclick="toggleNote('${day.id}','${key}')">
+        💬 ${note?'查看備注':'留備注'} ${noteOpen?'▲':'▼'}
+      </div>
+      ${noteOpen?`
+        ${note?`<div class="note-display">${note.replace(/\n/g,'<br>')}</div>`:''}
+        <textarea class="note-input" id="nt_${day.id}_${key}" rows="2" placeholder="留言給家人…">${note}</textarea>
+        <button class="note-save-btn" onclick="saveNote('${day.id}','${key}')">儲存</button>
+      `:(note?`<div class="note-display" onclick="toggleNote('${day.id}','${key}')">${note.replace(/\n/g,'<br>')}</div>`:'')}
+    </div>`;
+
+  // 編輯模式控制列
+  if (editMode) {
+    html += `
+    <div class="card-edit-bar">
+      <button class="btn-em" onclick="moveItem('${day.id}','${key}',-1)" ${idx===0?'disabled':''}>▲ 上移</button>
+      <button class="btn-em" onclick="moveItem('${day.id}','${key}',1)" ${idx===total-1?'disabled':''}>▼ 下移</button>
+      <button class="btn-em edit" onclick="openItemEdit('${day.id}','${key}',${isCustom})">✏️ 編輯</button>
+      <button class="btn-em del" onclick="deleteItem('${day.id}','${key}',${isCustom})">✕ 刪除</button>
+    </div>`;
+  }
+
+  // 內嵌編輯表單
+  if (isEditingThis) {
+    html += `
+    <div class="item-edit-form">
+      <div class="isef-title">✏️ 編輯景點</div>
+      <div class="fi-row" style="margin-bottom:8px">
+        <input class="fi-select" id="ief_cat" value="${item.cat||'📍'}" style="width:54px;text-align:center">
+        <input class="fi" id="ief_time" value="${item.time||''}" placeholder="時間" style="flex:1">
+      </div>
+      <input class="fi" id="ief_name" value="${(item.name||'').replace(/"/g,'&quot;')}" placeholder="名稱 *" style="width:100%;margin-bottom:8px">
+      <input class="fi" id="ief_desc" value="${(item.desc||'').replace(/"/g,'&quot;')}" placeholder="說明" style="width:100%;margin-bottom:8px">
+      <input class="fi" id="ief_via"  value="${(item.via||'').replace(/"/g,'&quot;')}"  placeholder="交通方式（🚇 地鐵...）" style="width:100%;margin-bottom:8px">
+      <input class="fi" id="ief_map"  value="${(item.map||'').replace(/"/g,'&quot;')}"  placeholder="Google Maps 連結" style="width:100%;margin-bottom:8px">
+      <div class="fi-row" style="margin-bottom:12px">
+        <input class="fi" id="ief_lat" type="number" step="any" value="${item.lat||''}" placeholder="緯度" style="flex:1">
+        <input class="fi" id="ief_lng" type="number" step="any" value="${item.lng||''}" placeholder="經度" style="flex:1">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-form-cancel" onclick="editingItem=null;renderDay(currentDay)">取消</button>
+        <button class="btn-form-submit" onclick="saveItemEdit('${day.id}','${key}',${isCustom})">儲存</button>
+      </div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function toggleNote(dayId, itemId) {
+  openNotes[`${dayId}_${itemId}`] = !openNotes[`${dayId}_${itemId}`];
+  renderDay(currentDay);
+}
+
+function renderDay(idx) {
+  const day     = ITINERARY[idx];
+  const customs = getCustom(day.id);
+  const baseItems = day.items.map(it => applyEdits(day.id, it));
+  const allItems  = [...baseItems, ...customs];
+
+  // 套用 Firebase 排序、過濾隱藏
+  const orderedRaw = getOrderedItems(day.id, [...day.items, ...customs]);
+  const ordered    = orderedRaw
+    .filter(it => !isHidden(day.id, it.id || it._k))
+    .map(it => applyEdits(day.id, it));
+
+  const allKeys = ordered.map(it => it.id || it._k);
+  const total   = allKeys.length;
+  const done    = allKeys.filter(k => isDone(day.id, k)).length;
+  const pct     = total ? Math.round(done/total*100) : 0;
+  const wx      = getWeather(idx);
+  const wxIcon  = WMO[wx.code] || '🌤️';
+  const wxTxt   = WMO_TXT[wx.code] || '多雲';
+  const routeUrl= getRouteUrl(ordered);
+
+  let h = `<div class="day-content">`;
+
+  // Weather bar
+  const isForecast = Object.keys(weatherData).length > 0;
+  h += `
+  <div class="weather-bar">
+    <div class="weather-icon">${wxIcon}</div>
+    <div>
+      <div class="weather-temp">${wx.max}°<sup>C</sup> <span style="font-size:14px;color:var(--t3)">/ ${wx.min}°</span></div>
+      <div class="weather-range">${wxTxt} ${isForecast?'· 即時預報':'· 6月典型天氣'}</div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:13px;font-weight:700">${day.date}（${day.dow}）</div>
+      <div style="font-size:12px;color:var(--t3)">${day.theme}</div>
+    </div>
+  </div>`;
+
+  // Progress
+  h += `
+  <div class="day-progress">
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-label">${done}/${total} 完成</div>
+  </div>`;
+
+  // Leaflet map
+  const hasPts = ordered.filter(i=>i.lat&&i.lng).length;
+  if (hasPts) {
+    h += `
+  <div class="map-section">
+    <div id="dayMapEl" class="map-frame"></div>
+    ${routeUrl?`<a class="map-route-btn" href="${routeUrl}" target="_blank">🚗 Google Maps 導航路線（${hasPts} 個景點）</a>`:''}
+  </div>`;
+  }
+
+  // Hotel（Firebase 覆蓋 or 預設）
+  const hotelOverride = fbData.hotel?.[day.id];
+  const hotel = hotelOverride || day.hotel;
+  if (hotel) {
+    const isEditingHotel = editMode && editingHotel === day.id;
+    h += `
+  <div class="hotel-card" style="flex-wrap:wrap;gap:8px">
+    <span class="hico">🏨</span>
+    <div style="flex:1;min-width:0"><div class="hname">${hotel.name}</div><div class="harea">${hotel.area||''}</div></div>
+    ${hotel.url?`<a href="${hotel.url}" target="_blank" style="background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:5px 12px;font-size:12px;text-decoration:none;font-weight:600;flex-shrink:0">地圖</a>`:''}
+    ${editMode?`<button onclick="openHotelEdit('${day.id}')" style="background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">✏️ 編輯住宿</button>`:''}
+  </div>`;
+    if (isEditingHotel) {
+      h += `
+  <div class="hotel-edit-bar">
+    <input class="fi" id="eh_name" value="${(hotel.name||'').replace(/"/g,'&quot;')}" placeholder="住宿名稱" style="flex:2;min-width:120px">
+    <input class="fi" id="eh_area" value="${(hotel.area||'').replace(/"/g,'&quot;')}" placeholder="區域" style="flex:1;min-width:80px">
+    <input class="fi" id="eh_url"  value="${(hotel.url||'').replace(/"/g,'&quot;')}"  placeholder="Google Maps 連結" style="flex:3;min-width:150px">
+    <button class="btn-form-submit" style="flex-shrink:0;padding:9px 16px;font-size:13px" onclick="saveHotelEdit('${day.id}')">儲存</button>
+    <button class="btn-form-cancel" style="flex-shrink:0;padding:9px 16px;font-size:13px" onclick="cancelHotelEdit()">取消</button>
+  </div>`;
+    }
+  }
+
+  // 景點列表（依排序，不分類）
+  ordered.forEach((item, i) => {
+    const isC = !!item._k;
+    h += itemCard(day, item, isC, item._k||null, i, ordered.length);
+  });
+
+  // Add form
+  h += `
+  <div id="addForm_${day.id}" class="add-card">
+    <div style="font-weight:700;margin-bottom:12px">➕ 提議景點到 ${day.date}</div>
+    <div style="margin-bottom:10px">
+      <div class="form-label">貼入 Google Maps 連結（自動判斷哪天最近）</div>
+      <div class="fi-row" style="margin-bottom:4px">
+        <input class="fi" id="cf_mapurl_${day.id}" placeholder="maps.app.goo.gl/... 或完整連結" style="flex:1;font-size:13px">
+        <button class="btn-parse" onclick="handleMapPaste('${day.id}')">解析</button>
+      </div>
+      <div id="cf_hint_${day.id}" class="hint-text"></div>
+    </div>
+    <div class="fi-row">
+      <select class="fi-select" id="cf_cat_${day.id}">
+        <option>🍽️</option><option>🥩</option><option>☕</option><option>🏛️</option>
+        <option>🏃</option><option>🛍️</option><option>🚡</option><option>🏖️</option><option>📍</option>
+      </select>
+      <input class="fi" id="cf_time_${day.id}" placeholder="時間（如：下午）" style="flex:1">
+    </div>
+    <input class="fi" id="cf_name_${day.id}" placeholder="景點 / 餐廳名稱 *" style="width:100%;margin-bottom:8px;margin-top:8px">
+    <input class="fi" id="cf_desc_${day.id}" placeholder="簡短說明" style="width:100%;margin-bottom:8px">
+    <input class="fi" id="cf_via_${day.id}" placeholder="交通方式（如：🚇 地鐵 2號線）" style="width:100%;margin-bottom:8px">
+    <input class="fi" id="cf_map_${day.id}" placeholder="導航連結（解析後自動填入）" style="width:100%;margin-bottom:12px">
+    <input type="hidden" id="cf_lat_${day.id}"><input type="hidden" id="cf_lng_${day.id}">
+    <div style="display:flex;gap:8px">
+      <button class="btn-form-cancel" onclick="document.getElementById('addForm_${day.id}').classList.remove('open')">取消</button>
+      <button class="btn-form-submit" onclick="addCustom('${day.id}')">新增</button>
+    </div>
+  </div>
+  <button class="btn-add-trigger" onclick="document.getElementById('addForm_${day.id}').classList.toggle('open')">＋ 提議景點到 ${day.date}</button>
+  </div>`;
+
+  document.getElementById('dayContent').innerHTML = h;
+  if (hasPts) initDayMap(ordered);
+}
+
+// ════════════════════════════════════════════
+// 初始化
+// ════════════════════════════════════════════
+window.addEventListener('offline', ()=>{ document.getElementById('offlineBar').style.display='block'; });
+window.addEventListener('online',  ()=>{ document.getElementById('offlineBar').style.display='none'; });
+
+const saved = localStorage.getItem('bsn_name');
+if (saved) {
+  userName = saved;
+  document.getElementById('curName').textContent = userName;
+  document.getElementById('nameModal').style.display = 'none';
+  initFb();
+}
+fetchWeather();
+renderTabs();
+renderDay(0);
+</script>
+</body>
+</html>
