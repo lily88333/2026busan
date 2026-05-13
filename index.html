@@ -191,10 +191,22 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:-apple-sy
 .expense-item:last-child{border-bottom:none}
 .exp-cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .exp-desc{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exp-meta{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
 .exp-by{font-size:11px;color:var(--t3)}
+.payer-badge{border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;color:#fff}
 .exp-amt{font-size:14px;font-weight:700;flex-shrink:0;text-align:right;line-height:1.4}
 .exp-amt-sub{font-size:11px;font-weight:400;color:var(--t3)}
 .exp-del{background:none;border:none;cursor:pointer;color:var(--t3);font-size:14px;padding:2px 4px}
+/* ── 付款人統計 ── */
+.payer-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.payer-stat{border-radius:10px;padding:11px 14px;color:#fff}
+.payer-stat .pname{font-size:12px;font-weight:600;opacity:.9}
+.payer-stat .pkrw{font-size:18px;font-weight:800;margin-top:2px}
+.payer-stat .ptwd{font-size:11px;opacity:.8;margin-top:1px}
+/* ── 付款人選擇鈕 ── */
+.payer-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.payer-pill{padding:6px 14px;border-radius:20px;border:2px solid transparent;font-size:13px;font-weight:700;cursor:pointer;color:#fff;opacity:.45;transition:opacity .15s;font-family:inherit}
+.payer-pill.sel{opacity:1;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 /* ── 交通方式 ── */
 .card-via{font-size:11px;color:var(--t3);margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .via-badge{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;color:var(--t2)}
@@ -290,9 +302,19 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:-apple-sy
 
 <div id="pg-budget" class="page">
   <div class="budget-section">
-    <div class="budget-summary" id="budgetSummary">
-      <div class="budget-stat"><div class="big" id="totalAmt">₩0</div><div class="lbl">總花費</div></div>
-      <div class="budget-stat"><div class="big" id="totalTWD">NT$0</div><div class="lbl">約台幣（×0.023）</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;margin-bottom:10px">💰 總花費</div>
+      <div style="display:flex;gap:16px;margin-bottom:12px">
+        <div><div style="font-size:22px;font-weight:800" id="totalAmt">₩0</div><div style="font-size:11px;color:var(--t3)">韓元</div></div>
+        <div><div style="font-size:22px;font-weight:800" id="totalTWD">NT$0</div><div style="font-size:11px;color:var(--t3)">台幣</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;margin-bottom:8px">👤 各人付款</div>
+      <div class="payer-summary" id="payerSummary">
+        <div class="payer-stat" style="background:#E8774A"><div class="pname">哺比</div><div class="pkrw">₩0</div><div class="ptwd">NT$0</div></div>
+        <div class="payer-stat" style="background:#4A90A4"><div class="pname">馬尼</div><div class="pkrw">₩0</div><div class="ptwd">NT$0</div></div>
+        <div class="payer-stat" style="background:#8B6BAE"><div class="pname">姊姊</div><div class="pkrw">₩0</div><div class="ptwd">NT$0</div></div>
+        <div class="payer-stat" style="background:#5A9A72"><div class="pname">妹妹</div><div class="pkrw">₩0</div><div class="ptwd">NT$0</div></div>
+      </div>
     </div>
     <div class="expense-form">
       <h3>➕ 新增消費</h3>
@@ -303,6 +325,13 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:-apple-sy
         <button class="cat-pill" onclick="selCat(this,'購')">🛍️ 購</button>
         <button class="cat-pill" onclick="selCat(this,'票')">🎟️ 票</button>
         <button class="cat-pill" onclick="selCat(this,'其他')">📌 其他</button>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.5px;margin-bottom:6px">誰付錢？</div>
+      <div class="payer-pills" id="payerPills">
+        <button class="payer-pill sel" style="background:#E8774A" onclick="selPayer(this,'哺比')">哺比</button>
+        <button class="payer-pill" style="background:#4A90A4" onclick="selPayer(this,'馬尼')">馬尼</button>
+        <button class="payer-pill" style="background:#8B6BAE" onclick="selPayer(this,'姊姊')">姊姊</button>
+        <button class="payer-pill" style="background:#5A9A72" onclick="selPayer(this,'妹妹')">妹妹</button>
       </div>
       <div class="fi-row" style="margin-bottom:10px">
         <input class="fi" id="expAmt" type="number" placeholder="金額" style="flex:1">
@@ -493,6 +522,9 @@ let userName    = '';
 let fbData      = {};
 let openNotes   = {};
 let selExpCat   = '食';
+let selExpPayer = '哺比';
+const PAYERS = ['哺比','馬尼','姊姊','妹妹'];
+const PAYER_COLORS = {'哺比':'#E8774A','馬尼':'#4A90A4','姊姊':'#8B6BAE','妹妹':'#5A9A72'};
 let editMode     = false;
 let editingItem  = null; // {dayId, key, isCustom}
 let editingHotel = null; // dayId
@@ -697,6 +729,11 @@ function selCat(el, cat) {
   document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('sel'));
   el.classList.add('sel');
 }
+function selPayer(el, payer) {
+  selExpPayer = payer;
+  document.querySelectorAll('.payer-pill').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+}
 const KRW_TO_TWD = 0.023; // 1₩ ≈ 0.023 NT$
 function toKRW(amt, currency) { return currency==='TWD' ? Math.round(amt / KRW_TO_TWD) : amt; }
 function toTWD(amt, currency) { return currency==='TWD' ? amt : Math.round(amt * KRW_TO_TWD); }
@@ -706,7 +743,7 @@ function addExpense() {
   const desc = document.getElementById('expDesc').value.trim();
   const currency = document.getElementById('expCurr').value;
   if (!amt || !desc) { alert('請填金額和說明'); return; }
-  db.ref('budget').push({ amt, currency, desc, cat:selExpCat, by:userName||'?', at:Date.now() });
+  db.ref('budget').push({ amt, currency, desc, cat:selExpCat, payer:selExpPayer, by:userName||'?', at:Date.now() });
   document.getElementById('expAmt').value=''; document.getElementById('expDesc').value='';
 }
 function delExpense(key) { if(confirm('刪除？')) db.ref(`budget/${key}`).remove(); }
@@ -716,9 +753,30 @@ function renderExpenses() {
   const totalTWD = items.reduce((s,[,v])=>s+toTWD(v.amt, v.currency||'KRW'),0);
   document.getElementById('totalAmt').textContent = '₩' + totalKRW.toLocaleString();
   document.getElementById('totalTWD').textContent = 'NT$' + totalTWD.toLocaleString();
+
+  // 各人統計
+  const payerTotals = {};
+  PAYERS.forEach(p => { payerTotals[p] = {krw:0, twd:0}; });
+  items.forEach(([,v]) => {
+    const p = v.payer || '哺比';
+    if (payerTotals[p]) {
+      payerTotals[p].krw += toKRW(v.amt, v.currency||'KRW');
+      payerTotals[p].twd += toTWD(v.amt, v.currency||'KRW');
+    }
+  });
+  const ps = document.getElementById('payerSummary');
+  if (ps) ps.innerHTML = PAYERS.map(p => `
+    <div class="payer-stat" style="background:${PAYER_COLORS[p]}">
+      <div class="pname">${p}</div>
+      <div class="pkrw">₩${payerTotals[p].krw.toLocaleString()}</div>
+      <div class="ptwd">NT$${payerTotals[p].twd.toLocaleString()}</div>
+    </div>`).join('');
+
   if (!items.length) { document.getElementById('expenseList').innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:14px">尚無記錄</div>'; return; }
   document.getElementById('expenseList').innerHTML = items.map(([k,v])=>{
-    const curr = v.currency||'KRW';
+    const curr  = v.currency||'KRW';
+    const payer = v.payer || '?';
+    const pcolor = PAYER_COLORS[payer] || '#aaa';
     const primary   = curr==='KRW' ? `₩${v.amt.toLocaleString()}` : `NT$${v.amt.toLocaleString()}`;
     const secondary = curr==='KRW' ? `≈NT$${toTWD(v.amt,'KRW').toLocaleString()}` : `≈₩${toKRW(v.amt,'TWD').toLocaleString()}`;
     return `
@@ -726,7 +784,11 @@ function renderExpenses() {
       <div class="exp-cat-dot" style="background:${EXP_COLORS[v.cat]||'#aaa'}"></div>
       <div style="flex:1;min-width:0">
         <div class="exp-desc">${v.desc}</div>
-        <div class="exp-by">${v.cat} · ${v.by}</div>
+        <div class="exp-meta">
+          <span class="exp-by">${v.cat}</span>
+          <span class="payer-badge" style="background:${pcolor}">${payer}</span>
+          <span class="exp-by">記：${v.by}</span>
+        </div>
       </div>
       <div class="exp-amt">${primary}<div class="exp-amt-sub">${secondary}</div></div>
       <button class="exp-del" onclick="delExpense('${k}')">✕</button>
